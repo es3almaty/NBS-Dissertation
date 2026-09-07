@@ -1,0 +1,11 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.DS_Store
+
+# Local deployment/build output
+netlify-dist/
+.env
+.env.*
+!.env.example
