@@ -27,7 +27,7 @@
       </label>
     </div>
 
-    <button id="submit-button" class="primary" type="submit">{{ t.process }}</button>
+    <button id="submit-button" class="primary" type="submit" disabled>{{ t.process }}</button>
     <div id="processing" class="processing" hidden aria-live="polite">
       <span class="spinner"></span>
       <div><strong>{{ t.processing }}</strong><small>{{ t.processing_detail }}</small></div>
@@ -48,10 +48,22 @@
   const form = document.getElementById('upload-form');
   const button = document.getElementById('submit-button');
   const processing = document.getElementById('processing');
+  const idleName = name.textContent;
+
   input.addEventListener('change', () => {
-    if (input.files.length) name.textContent = input.files[0].name;
+    const hasFile = !!(input.files && input.files.length);
+    name.textContent = hasFile ? input.files[0].name : idleName;
+    button.disabled = !hasFile;
+    processing.hidden = true;
   });
-  form.addEventListener('submit', () => {
+
+  form.addEventListener('submit', (event) => {
+    if (!input.files || !input.files.length) {
+      event.preventDefault();
+      button.disabled = true;
+      processing.hidden = true;
+      return;
+    }
     button.disabled = true;
     button.hidden = true;
     processing.hidden = false;
