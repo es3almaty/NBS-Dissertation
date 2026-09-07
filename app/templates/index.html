@@ -1,5 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
+<section class="language-gate shell" aria-labelledby="language-choice-heading">
+  <div class="language-gate-copy">
+    <span class="language-kicker">LANGUAGE / ЯЗЫК / ТІЛ</span>
+    <h2 id="language-choice-heading">Choose your language / Выберите язык / Тілді таңдаңыз</h2>
+  </div>
+  <div class="language-choice-grid">
+    <a class="language-choice {% if lang == 'en' %}active{% endif %}" href="/?lang=en">
+      <strong>English</strong>
+      <span>Continue in English</span>
+    </a>
+    <a class="language-choice {% if lang == 'ru' %}active{% endif %}" href="/?lang=ru">
+      <strong>Русский</strong>
+      <span>Продолжить на русском</span>
+    </a>
+    <a class="language-choice {% if lang == 'kk' %}active{% endif %}" href="/?lang=kk">
+      <strong>Қазақша</strong>
+      <span>Қазақ тілінде жалғастыру</span>
+    </a>
+  </div>
+</section>
+
 <section class="hero shell">
   <div class="hero-copy">
     <div class="eyebrow">{{ t.eyebrow }}</div>
