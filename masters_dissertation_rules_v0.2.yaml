@@ -1,0 +1,321 @@
+version: "0.2"
+product: "Narxoz Master's dissertation/project submission-readiness and compliance engine"
+source_priority:
+  1: "Narxoz Master's Project Regulation (2025)"
+  2: "Narxoz APA 7 guidance (Academic Council Protocol No. 6, 28 Nov 2022)"
+conflict_rule: "Master's Project Regulation prevails; APA used only where Regulation defers or is silent."
+cutoff:
+  missing_critical_components_greater_than: 2
+  outcome: RESUBMIT
+  output: NONCOMPLIANCE_REPORT.docx
+rules:
+  - id: SRC-001
+    description: "Master's Project Regulation controls conflicts with APA guidance."
+    source: "Product source hierarchy + Regulation 7.11"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: STR-001
+    description: "Title page is mandatory and should follow Regulation Appendix 2."
+    source: "Regulation 7.7, 7.10, Appendix 2"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: true
+    auto_fix: false
+    resubmit_trigger: "Counts when MISSING"
+    action: FLAG
+  - id: STR-002
+    description: "Contents is mandatory."
+    source: "Regulation 7.7, 7.12"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: true
+    auto_fix: false
+    resubmit_trigger: "Counts when MISSING"
+    action: FLAG
+  - id: STR-003
+    description: "Project Summary is mandatory and distinct from annotation."
+    source: "Regulation 7.7, 7.13"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: true
+    auto_fix: false
+    resubmit_trigger: "Counts when MISSING"
+    action: FLAG
+  - id: STR-004
+    description: "Three-language annotation set (Kazakh/Russian/English) is required."
+    source: "Regulation 7.8; 8.10"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: true
+    auto_fix: false
+    resubmit_trigger: "Counts aggregate set when MISSING"
+    action: FLAG
+  - id: STR-005
+    description: "Main body is mandatory."
+    source: "Regulation 7.7, 7.14-7.15"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: true
+    auto_fix: false
+    resubmit_trigger: "Counts when MISSING"
+    action: FLAG
+  - id: STR-006
+    description: "Conclusion is mandatory."
+    source: "Regulation 7.7 and conclusion requirements following 7.15"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: true
+    auto_fix: false
+    resubmit_trigger: "Counts when MISSING"
+    action: FLAG
+  - id: STR-007
+    description: "References/list of used literature is mandatory."
+    source: "Regulation 7.7 and literature-list requirement"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: true
+    auto_fix: false
+    resubmit_trigger: "Counts when MISSING"
+    action: FLAG
+  - id: STR-008
+    description: "Appendices are a critical component when cited or clearly required by the dissertation."
+    source: "Regulation 7.7, 7.15 appendix rule; v0.2 product rule"
+    source_priority: 1
+    status: ACTIVE_WITH_PRODUCT_QUALIFIER
+    severity: CRITICAL
+    critical_component: true
+    auto_fix: false
+    resubmit_trigger: "Counts when applicable and MISSING"
+    action: BLOCK_FORMATTING
+  - id: STR-009
+    description: "Contents headings must match actual section/subsection titles."
+    source: "Regulation 7.12"
+    source_priority: 1
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: STR-010
+    description: "Main part should, as a rule, contain three sections."
+    source: "Regulation 7.15"
+    source_priority: 1
+    status: ADVISORY_NOT_ABSOLUTE
+    severity: ADVISORY
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: MANUAL_REVIEW
+  - id: STR-011
+    description: "Each main section should end with conclusions."
+    source: "Regulation 7.15"
+    source_priority: 1
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: STR-012
+    description: "Recommended length is 50-70 pages excluding appendices and annotations."
+    source: "Regulation 7.9"
+    source_priority: 1
+    status: ADVISORY
+    severity: ADVISORY
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: APP-001
+    description: "All appendices must be referenced in text and headed e.g. Appendix 1."
+    source: "Regulation appendix requirements after 7.15"
+    source_priority: 1
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: APP-002
+    description: "Use numeric appendix convention rather than generic APA lettering where conflict exists."
+    source: "Regulation appendix example vs APA generic appendix lettering"
+    source_priority: 1
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: FMT-001
+    description: "A4 portrait."
+    source: "Narxoz APA 7 guidance, General Format"
+    source_priority: 2
+    status: ACTIVE
+    severity: MINOR
+    critical_component: false
+    auto_fix: true
+    resubmit_trigger: false
+    action: AUTO_FIX
+  - id: FMT-002
+    description: "Margins 2.54 cm on all sides."
+    source: "Narxoz APA 7 guidance, General Format"
+    source_priority: 2
+    status: ACTIVE
+    severity: MINOR
+    critical_component: false
+    auto_fix: true
+    resubmit_trigger: false
+    action: AUTO_FIX
+  - id: FMT-003
+    description: "Times New Roman 12 pt, black, regular body text; double spacing."
+    source: "Narxoz APA 7 guidance, Font / General Format"
+    source_priority: 2
+    status: ACTIVE
+    severity: MINOR
+    critical_component: false
+    auto_fix: true
+    resubmit_trigger: false
+    action: AUTO_FIX
+  - id: FMT-004
+    description: "Student page number appears in right-aligned header; do not duplicate PAGE fields."
+    source: "Narxoz APA 7 guidance, General Format; v0.2 safety rule"
+    source_priority: 2
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: true
+    resubmit_trigger: false
+    action: AUTO_FIX
+  - id: REF-001
+    description: "References on separate page, double spaced, 1.27 cm hanging indent, alphabetic by first author where safely identifiable."
+    source: "Narxoz APA 7 guidance, Reference List Basic Rules"
+    source_priority: 2
+    status: ACTIVE
+    severity: MINOR
+    critical_component: false
+    auto_fix: true
+    resubmit_trigger: false
+    action: AUTO_FIX
+  - id: REF-002
+    description: "Every cited source should appear in references and every reference should be cited."
+    source: "Narxoz APA 7 guidance, Reference List Basic Rules"
+    source_priority: 2
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: REF-003
+    description: "Numeric citations with no bibliography are reported; bibliography is never reconstructed."
+    source: "v0.2 product safety rule"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: BLOCK_FORMATTING
+  - id: TAB-001
+    description: "Tables numbered sequentially with Arabic numerals."
+    source: "Narxoz APA 7 guidance, Tables"
+    source_priority: 2
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: TAB-002
+    description: "Use only table borders necessary for clarity; no vertical/full-cell grid by default."
+    source: "Narxoz APA 7 guidance, Table Borders"
+    source_priority: 2
+    status: ACTIVE_CONSERVATIVE
+    severity: MINOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: MANUAL_REVIEW
+  - id: FIG-001
+    description: "Figures in main text numbered sequentially with Arabic numerals."
+    source: "Narxoz APA 7 guidance, Figures"
+    source_priority: 2
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: CONS-001
+    description: "Flag table/prose numerical inconsistencies without selecting the correct value."
+    source: "v0.2 product safety rule; Regulation internal-unity principle 7.16"
+    source_priority: 1
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: MANUAL_REVIEW
+  - id: CONS-002
+    description: "Flag references to nonexistent sections/tables/figures/appendices."
+    source: "v0.2 product consistency rule"
+    source_priority: 1
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: CONS-003
+    description: "Flag empty source placeholders such as источник []."
+    source: "v0.2 product consistency rule"
+    source_priority: 1
+    status: ACTIVE
+    severity: MAJOR
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG
+  - id: SAFE-001
+    description: "Never invent bibliographic metadata or missing dissertation content."
+    source: "v0.2 academic-integrity boundary"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: BLOCK_FORMATTING
+  - id: SAFE-002
+    description: "Conditional renumbering/cross-reference/citation conversions occur only with unambiguous mappings; otherwise preserve and flag."
+    source: "v0.2 transformation safety rule"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: MANUAL_REVIEW
+  - id: PRIV-001
+    description: "No retention of student dissertations after processing."
+    source: "v0.2 beta privacy policy"
+    source_priority: 1
+    status: ACTIVE
+    severity: CRITICAL
+    critical_component: false
+    auto_fix: false
+    resubmit_trigger: false
+    action: FLAG

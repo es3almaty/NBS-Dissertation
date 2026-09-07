@@ -1,0 +1,200 @@
+[
+  {
+    "fixture": "01_fully_compliant.docx",
+    "status": "READY",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": []
+  },
+  {
+    "fixture": "02_two_missing.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 2,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": []
+  },
+  {
+    "fixture": "03_three_missing.docx",
+    "status": "RESUBMIT",
+    "missing_critical": 3,
+    "formatted": false,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": []
+  },
+  {
+    "fixture": "04_unmatched_citation.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "UNMATCHED_CITATIONS"
+    ]
+  },
+  {
+    "fixture": "05_numeric_no_bibliography.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 1,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "CONTENTS_HEADING_MISMATCH",
+      "NUMERIC_CITATIONS_NO_BIBLIOGRAPHY"
+    ]
+  },
+  {
+    "fixture": "06_duplicate_tables.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "DUPLICATE_TABLE_NUMBERS"
+    ]
+  },
+  {
+    "fixture": "07_broken_table.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "BROKEN_TABLE"
+    ]
+  },
+  {
+    "fixture": "08_duplicate_page_fields.docx",
+    "status": "READY",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "DUPLICATE_PAGE_FIELDS"
+    ]
+  },
+  {
+    "fixture": "09_automatic_numbering.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 4,
+    "footnotes_present": false,
+    "findings": [
+      "AUTOMATIC_WORD_NUMBERING_DETECTED",
+      "NORMAL_THREE_SECTION_STRUCTURE",
+      "SECTION_CONCLUSIONS_MISSING"
+    ]
+  },
+  {
+    "fixture": "10_contents_mismatch.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "CONTENTS_HEADING_MISMATCH"
+    ]
+  },
+  {
+    "fixture": "11_numeric_inconsistency.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "TABLE_PROSE_NUMERIC_INCONSISTENCY"
+    ]
+  },
+  {
+    "fixture": "12_appendix_mismatch.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 1,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "APPENDIX_REFERENCE_MISMATCH"
+    ]
+  },
+  {
+    "fixture": "13_numbered_list_noise.docx",
+    "status": "READY",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": []
+  },
+  {
+    "fixture": "14_caption_blank_wrap.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "DUPLICATE_TABLE_NUMBERS"
+    ]
+  },
+  {
+    "fixture": "15_narrow_index_column.docx",
+    "status": "READY",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": []
+  },
+  {
+    "fixture": "16_malformed_figure_caption.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "DUPLICATE_FIGURE_NUMBERS"
+    ]
+  },
+  {
+    "fixture": "17_repeated_metric_inconsistency.docx",
+    "status": "CONDITIONAL",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": [
+      "REPEATED_METRIC_VALUE_INCONSISTENCY"
+    ]
+  },
+  {
+    "fixture": "18_unused_footnotes_part.docx",
+    "status": "READY",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": []
+  },
+  {
+    "fixture": "19_section_synthesis_phrase.docx",
+    "status": "READY",
+    "missing_critical": 0,
+    "formatted": true,
+    "major_sections": 3,
+    "footnotes_present": false,
+    "findings": []
+  }
+]

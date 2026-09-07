@@ -1,0 +1,11 @@
+[build]
+  command = "bash netlify/build.sh"
+  publish = "netlify-dist"
+
+[build.environment]
+  PYTHON_VERSION = "3.13"
+
+# The public Netlify URL is a privacy-preserving front door.
+# All application routes are proxied to the Python/FastAPI backend.
+# BACKEND_ORIGIN must be set in Netlify site environment variables,
+# for example: https://narxoz-dissertation-beta-api.onrender.com

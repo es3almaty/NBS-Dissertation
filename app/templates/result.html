@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="result-shell shell">
+  <div class="result-card status-{{ meta.status|lower }}">
+    <div class="result-kicker">{{ t.status }}</div>
+    <h1>{{ status_title }}</h1>
+    <p>{{ status_text }}</p>
+    <div class="result-meta">
+      <span>{{ meta.original_name }}</span>
+      <span>{{ t.missing }}: <strong>{{ meta.missing_critical_count }}</strong></span>
+    </div>
+
+    {% if meta.missing_components %}
+      <div class="missing-list">
+        {% for item in meta.missing_components %}<span>{{ item }}</span>{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="download-card">
+    <div>
+      <div class="eyebrow">{{ t.downloads }}</div>
+      <h2>{{ t.report_first }}</h2>
+    </div>
+    <div class="download-actions">
+      {% if meta.files.formatted %}
+        <a class="download secondary" href="/download/{{ meta.job_id }}/formatted">{{ t.download_formatted }} <span>↓</span></a>
+      {% endif %}
+      {% if meta.files.report %}
+        <a class="download primary-link" href="/download/{{ meta.job_id }}/report">
+          {% if meta.status == 'RESUBMIT' %}{{ t.download_noncompliance }}{% else %}{{ t.download_report }}{% endif %} <span>↓</span>
+        </a>
+      {% endif %}
+    </div>
+    <p class="expiry">{{ t.expires.format(minutes=ttl_minutes) }}</p>
+  </div>
+
+  <div class="result-footer-actions">
+    <a class="text-link" href="/?lang={{ lang }}">← {{ t.new_check }}</a>
+    <form action="/delete/{{ meta.job_id }}" method="post">
+      <input type="hidden" name="language" value="{{ lang }}">
+      <button class="danger-link" type="submit">{{ t.delete_now }}</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

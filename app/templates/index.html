@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero shell">
+  <div class="hero-copy">
+    <div class="eyebrow">{{ t.eyebrow }}</div>
+    <h1>{{ t.title }}</h1>
+    <p class="lede">{{ t.intro }}</p>
+  </div>
+
+  <form id="upload-form" class="upload-card" action="/process" method="post" enctype="multipart/form-data">
+    <div class="field">
+      <label for="language">{{ t.language }}</label>
+      <select id="language" name="language">
+        {% for code, label in languages.items() %}
+          <option value="{{ code }}" {% if code == lang %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="field">
+      <label>{{ t.upload_label }}</label>
+      <label class="dropzone" for="dissertation">
+        <input id="dissertation" name="dissertation" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
+        <span class="file-icon">DOCX</span>
+        <span class="file-action">{{ t.choose_file }}</span>
+        <span id="file-name" class="file-name">{{ t.upload_hint.format(max_mb=max_mb) }}</span>
+      </label>
+    </div>
+
+    <button id="submit-button" class="primary" type="submit">{{ t.process }}</button>
+    <div id="processing" class="processing" hidden aria-live="polite">
+      <span class="spinner"></span>
+      <div><strong>{{ t.processing }}</strong><small>{{ t.processing_detail }}</small></div>
+    </div>
+  </form>
+</section>
+
+<section class="principles shell">
+  <article><span>01</span><h2>{{ t.privacy_title }}</h2><p>{{ t.privacy }}</p></article>
+  <article><span>02</span><h2>{{ t.rule_title }}</h2><p>{{ t.rule }}</p></article>
+  <article><span>03</span><h2>{{ t.boundary_title }}</h2><p>{{ t.boundary }}</p></article>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+  const input = document.getElementById('dissertation');
+  const name = document.getElementById('file-name');
+  const form = document.getElementById('upload-form');
+  const button = document.getElementById('submit-button');
+  const processing = document.getElementById('processing');
+  input.addEventListener('change', () => {
+    if (input.files.length) name.textContent = input.files[0].name;
+  });
+  form.addEventListener('submit', () => {
+    button.disabled = true;
+    button.hidden = true;
+    processing.hidden = false;
+  });
+</script>
+{% endblock %}

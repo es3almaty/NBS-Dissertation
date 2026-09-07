@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="error-shell shell">
+  <div class="error-card">
+    <div class="error-code">!</div>
+    <h1>{{ t.error_title }}</h1>
+    <p>{{ message }}</p>
+    <a class="primary-link inline" href="/?lang={{ lang }}">{{ t.new_check }}</a>
+  </div>
+</section>
+{% endblock %}
