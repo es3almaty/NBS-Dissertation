@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from dissertation_formatter.engine import audit_document
+from dissertation_formatter.integrity_guard import ContentIntegrityError
 from dissertation_formatter.models import ComponentStatus
 from dissertation_formatter.translations import display_component
 
@@ -210,6 +211,15 @@ async def process_document(
             "error.html",
             {"lang": lang, "languages": LANGUAGES, "t": t, "message": str(exc.detail)},
             status_code=exc.status_code,
+        )
+    except ContentIntegrityError:
+        if job_dir is not None:
+            store.delete(job_id)
+        return templates.TemplateResponse(
+            request,
+            "error.html",
+            {"lang": lang, "languages": LANGUAGES, "t": t, "message": t["integrity_error"]},
+            status_code=500,
         )
     except Exception:
         if job_dir is not None:

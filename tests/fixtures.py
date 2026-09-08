@@ -29,6 +29,10 @@ def _add_title(doc):
 
 def _add_contents(doc, mismatch=False):
     doc.add_paragraph('СОДЕРЖАНИЕ')
+    # Synthetic compliant fixtures use a real Word TOC field so pagination can refresh
+    # after formatting. Visible entries remain explicit to exercise contents matching.
+    fp=doc.add_paragraph()
+    fld=OxmlElement('w:fldSimple');fld.set(qn('w:instr'),'TOC \\o \"1-3\" \\h \\z \\u');fp._p.append(fld)
     doc.add_paragraph(('1 Неверное название' if mismatch else '1 Исследовательская часть') + ' ........ 5')
     doc.add_paragraph('2 Результаты исследования ........ 12')
     doc.add_paragraph('3 Практические рекомендации ........ 20')
@@ -275,3 +279,33 @@ def replace_section_conclusion_markers_with_takim_obrazom(path: Path):
         if p.text.startswith('Выводы по разделу'):
             p.text='Таким образом, результаты раздела обобщены и сформулированы.'
     doc.save(path)
+
+
+def remove_dynamic_toc_field(path: Path):
+    """Convert the synthetic contents page to a static one for pagination-safety tests."""
+    tmp=path.with_suffix('.tmp.docx')
+    from lxml import etree
+    ns={'w':'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+    with zipfile.ZipFile(path,'r') as zin,zipfile.ZipFile(tmp,'w',zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            data=zin.read(item.filename)
+            if item.filename=='word/document.xml':
+                root=etree.fromstring(data)
+                for fld in root.xpath('.//w:fldSimple[contains(@w:instr,"TOC")]',namespaces=ns):
+                    fld.getparent().remove(fld)
+                data=etree.tostring(root,xml_declaration=True,encoding='UTF-8',standalone='yes')
+            zout.writestr(item,data)
+    tmp.replace(path)
+
+def build_title_table_fixture(path: Path):
+    doc=Document()
+    doc.add_paragraph('НАО «УНИВЕРСИТЕТ НАРХОЗ»')
+    doc.add_paragraph('ТЕСТОВЫЙ МАГИСТЕРСКИЙ ПРОЕКТ')
+    t=doc.add_table(rows=1,cols=2)
+    t.cell(0,0).text=''
+    p=t.cell(0,1).paragraphs[0];p.add_run('Научный руководитель: Петров П.П.')
+    doc.add_paragraph('Алматы, 2026')
+    doc.add_paragraph('АННОТАЦИЯ')
+    doc.add_paragraph('Краткая аннотация тестового проекта, используемая только для проверки сохранения макета титульной страницы.')
+    doc.save(path)
+    return path

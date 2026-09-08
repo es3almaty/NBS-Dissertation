@@ -153,3 +153,67 @@ def test_19_takim_obrazom_counts_as_section_conclusion(tmp_path):
     p=build_base(tmp_path/'synthesis.docx');replace_section_conclusion_markers_with_takim_obrazom(p)
     a=audit_document(p,tmp_path/'out','en')
     assert 'SECTION_CONCLUSIONS_MISSING' not in codes(a)
+
+
+def test_20_post_format_content_integrity_is_verified(tmp_path):
+    p=build_base(tmp_path/'integrity.docx')
+    a=audit_document(p,tmp_path/'out','en')
+    assert a.metadata['post_format_content_integrity']['passed'] is True
+    assert 'POST_FORMAT_CONTENT_INTEGRITY_VERIFIED' in codes(a)
+
+def test_21_integrity_guard_detects_text_tampering(tmp_path):
+    from dissertation_formatter.integrity_guard import verify_content_integrity
+    from dissertation_formatter.word_formatter import format_document
+    from dissertation_formatter.models import CitationSystem
+    from docx import Document
+    p=build_base(tmp_path/'source.docx')
+    out=tmp_path/'formatted.docx'
+    format_document(p,out,CitationSystem.APA_AUTHOR_DATE)
+    d=Document(out)
+    target=next(x for x in d.paragraphs if x.text.startswith('Проект анализирует'))
+    target.text=target.text+' ИЗМЕНЕНО'
+    d.save(out)
+    r=verify_content_integrity(p,out)
+    assert r.passed is False
+    assert 'document' in r.failures
+
+def test_22_static_toc_is_flagged_for_manual_page_update(tmp_path):
+    p=build_base(tmp_path/'static_toc.docx')
+    remove_dynamic_toc_field(p)
+    a=audit_document(p,tmp_path/'out','en')
+    assert 'STATIC_TOC_PAGE_NUMBERS_REQUIRE_UPDATE' in codes(a)
+    assert a.status==SubmissionStatus.CONDITIONAL
+
+def test_23_title_page_table_formatting_is_preserved(tmp_path):
+    from dissertation_formatter.word_formatter import format_document
+    from dissertation_formatter.models import CitationSystem
+    from docx import Document
+    p=build_title_table_fixture(tmp_path/'title_table.docx')
+    before=Document(p)
+    bp=before.tables[0].cell(0,1).paragraphs[0]
+    # Fixture inherits normal spacing/font: formatter must not impose body double-spacing
+    # or 12-pt direct formatting on the title-page supervisor table.
+    out=tmp_path/'title_table_formatted.docx'
+    format_document(p,out,CitationSystem.NO_DETECTABLE_SYSTEM)
+    after=Document(out)
+    ap=after.tables[0].cell(0,1).paragraphs[0]
+    assert ap.paragraph_format.line_spacing==bp.paragraph_format.line_spacing
+    assert ap.runs[0].font.size==bp.runs[0].font.size
+
+def test_24_engine_never_releases_output_when_content_changes(tmp_path,monkeypatch):
+    import dissertation_formatter.engine as eng
+    from docx import Document
+    from dissertation_formatter.integrity_guard import ContentIntegrityError
+    p=build_base(tmp_path/'source.docx')
+    real=eng.format_document
+    def corrupting_formatter(src,dst,citation_system):
+        fixes=real(src,dst,citation_system)
+        d=Document(dst)
+        target=next(x for x in d.paragraphs if x.text.startswith('Проект анализирует'))
+        target.text=target.text+' CORRUPTED'
+        d.save(dst)
+        return fixes
+    monkeypatch.setattr(eng,'format_document',corrupting_formatter)
+    with pytest.raises(ContentIntegrityError):
+        eng.audit_document(p,tmp_path/'out','en')
+    assert not list((tmp_path/'out').glob('*FORMATTED_DISSERTATION.docx'))

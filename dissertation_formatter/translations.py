@@ -119,7 +119,9 @@ FINDING_TITLES_RU = {
 "PAGE_FIELD_RECHECK_REQUIRED":"Требуется повторная OOXML-проверка нумерации страниц",
 "AUTOMATIC_NUMBERING_RECHECK_REQUIRED":"Требуется повторная OOXML-проверка автоматической нумерации",
 "TABLE_STRUCTURE_RECHECK_REQUIRED":"Требуется повторная OOXML-проверка структуры таблиц",
-"FIGURE_CAPTION_RECHECK_REQUIRED":"Требуется проверка подписей рисунков"
+"FIGURE_CAPTION_RECHECK_REQUIRED":"Требуется проверка подписей рисунков",
+"STATIC_TOC_PAGE_NUMBERS_REQUIRE_UPDATE":"Требуется обновить номера страниц в Содержании",
+"POST_FORMAT_CONTENT_INTEGRITY_VERIFIED":"Сохранность содержания после форматирования подтверждена"
 }
 FINDING_TITLES_KK = {
 "TITLE_TEMPLATE_NONCOMPLIANT":"Титулдық бет бар, бірақ үлгіге сәйкес емес","NORMAL_THREE_SECTION_STRUCTURE":"Құрылым әдеттегі үш бөлімді модельден өзгеше",
@@ -137,7 +139,9 @@ FINDING_TITLES_KK = {
 "PAGE_FIELD_RECHECK_REQUIRED":"Бет нөмірлеуін OOXML деңгейінде қайта тексеру қажет",
 "AUTOMATIC_NUMBERING_RECHECK_REQUIRED":"Автоматты нөмірлеуді OOXML деңгейінде қайта тексеру қажет",
 "TABLE_STRUCTURE_RECHECK_REQUIRED":"Кесте құрылымын OOXML деңгейінде қайта тексеру қажет",
-"FIGURE_CAPTION_RECHECK_REQUIRED":"Сурет атауларын тексеру қажет"
+"FIGURE_CAPTION_RECHECK_REQUIRED":"Сурет атауларын тексеру қажет",
+"STATIC_TOC_PAGE_NUMBERS_REQUIRE_UPDATE":"Мазмұндағы бет нөмірлерін жаңарту қажет",
+"POST_FORMAT_CONTENT_INTEGRITY_VERIFIED":"Пішімдеуден кейін мазмұнның сақталғаны расталды"
 }
 
 def rt(lang,key,**kwargs):

@@ -8,12 +8,64 @@ from pathlib import Path
 from docx import Document
 from docx.enum.section import WD_ORIENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.text.paragraph import Paragraph
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
 from .models import CitationSystem
 from .ooxml_utils import count_page_fields_by_part, remove_extra_page_fields_from_xml
+from .integrity_guard import has_dynamic_toc
 
+
+
+_FRONT_MATTER_RX=re.compile(r"^(?:аннотация|аңдатпа|abstract|содержание|contents|мазмұны|резюме проекта|project summary|жоба түйіндемесі)\b",re.I)
+
+def _title_page_end_index(doc: Document) -> int:
+    """Return the first paragraph index after the title page."""
+    for i,p in enumerate(doc.paragraphs):
+        if _FRONT_MATTER_RX.match(p.text.strip()):
+            return i
+    return 0
+
+def _title_page_tables(doc: Document) -> set[object]:
+    """Return XML table elements appearing before the first front-matter heading.
+
+    Supervisor details are often placed in a table on NBS title pages. Those tables must
+    be preserved with the rest of the title-page layout rather than globally double-spaced.
+    """
+    preserved=set()
+    for child in doc.element.body.iterchildren():
+        if child.tag==qn("w:p"):
+            p=Paragraph(child,doc)
+            if _FRONT_MATTER_RX.match(p.text.strip()):
+                break
+        elif child.tag==qn("w:tbl"):
+            preserved.add(child)
+    return preserved
+
+
+def _set_update_fields_on_open(path: Path) -> bool:
+    """Ask Word to refresh dynamic fields (especially a real TOC) when the file opens."""
+    if not has_dynamic_toc(path):
+        return False
+    tmp=path.with_suffix(".fields.tmp.docx")
+    settings_name="word/settings.xml"
+    with zipfile.ZipFile(path,"r") as zin, zipfile.ZipFile(tmp,"w",zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            data=zin.read(item.filename)
+            if item.filename==settings_name:
+                from lxml import etree
+                root=etree.fromstring(data)
+                nodes=root.xpath('./w:updateFields',namespaces={'w':'http://schemas.openxmlformats.org/wordprocessingml/2006/main'})
+                if nodes:
+                    node=nodes[0]
+                else:
+                    node=etree.SubElement(root,qn('w:updateFields'))
+                node.set(qn('w:val'),'true')
+                data=etree.tostring(root,xml_declaration=True,encoding='UTF-8',standalone='yes')
+            zout.writestr(item,data)
+    tmp.replace(path)
+    return True
 
 def _set_cell_margins(cell, top=80, start=80, bottom=80, end=80):
     tc=cell._tc; tcPr=tc.get_or_add_tcPr(); tcMar=tcPr.first_child_found_in("w:tcMar")
@@ -79,8 +131,18 @@ def format_document(input_path: str|Path, output_path: str|Path, citation_system
         sec.top_margin=Cm(2.54);sec.bottom_margin=Cm(2.54);sec.left_margin=Cm(2.54);sec.right_margin=Cm(2.54)
     fixes.append("Set A4 portrait with 2.54 cm margins")
 
-    # Normalize body run typography without touching data/text.
-    for p in doc.paragraphs:
+    # Normalize body run typography without touching data/text. Preserve the existing
+    # title-page typography and spacing as a single layout-sensitive block.
+    title_end=_title_page_end_index(doc)
+    title_tables=_title_page_tables(doc) if title_end else set()
+    if title_end:
+        # Make the title/front-matter boundary explicit. Many student files simulate a
+        # title-page break with blank paragraphs, which becomes unstable when later text
+        # is reformatted. A page-break-before changes layout only and prevents spill.
+        doc.paragraphs[title_end].paragraph_format.page_break_before=True
+    for i,p in enumerate(doc.paragraphs):
+        if i < title_end:
+            continue
         p.paragraph_format.line_spacing=2
         style=(p.style.name if p.style else "").lower()
         # Apply first-line indentation only to prose-like paragraphs. Front matter, headings,
@@ -98,6 +160,8 @@ def format_document(input_path: str|Path, output_path: str|Path, citation_system
             r.font.name="Times New Roman";r.font.size=Pt(12);r.font.color.rgb=RGBColor(0,0,0)
             r._element.rPr.rFonts.set(qn("w:eastAsia"),"Times New Roman")
     for table in doc.tables:
+        if table._tbl in title_tables:
+            continue
         for row in table.rows:
             row._tr.get_or_add_trPr()
             for cell in row.cells:
@@ -111,6 +175,8 @@ def format_document(input_path: str|Path, output_path: str|Path, citation_system
                         r.font.name="Times New Roman";r.font.size=Pt(12);r.font.color.rgb=RGBColor(0,0,0)
                         r._element.rPr.rFonts.set(qn("w:eastAsia"),"Times New Roman")
     fixes.append("Normalized body text to Times New Roman 12 pt, black, double-spaced")
+    if title_end:
+        fixes.append("Preserved existing title-page layout to prevent pagination spill")
 
     _apply_reference_format(doc,citation_system)
     if citation_system in {CitationSystem.APA_AUTHOR_DATE,CitationSystem.MIXED}:
@@ -129,4 +195,6 @@ def format_document(input_path: str|Path, output_path: str|Path, citation_system
         _add_page_field(p)
         doc.save(output_path)
         fixes.append("Inserted a single right-aligned PAGE field in the header")
+    if _set_update_fields_on_open(output_path):
+        fixes.append("Configured Word to update the dynamic table of contents/fields on open")
     return fixes

@@ -11,6 +11,7 @@ from .consistency_checker import check_internal_consistency
 from .word_formatter import format_document
 from .report_generator import generate_report
 from .ooxml_utils import count_page_fields_by_part
+from .integrity_guard import assert_content_integrity, has_dynamic_toc, ContentIntegrityError
 
 
 def _dedupe_findings(findings):
@@ -29,6 +30,17 @@ def audit_document(input_path: str|Path, output_dir: str|Path, language: str="en
     tables,tfind=analyze_tables(input_path)
     cfind=check_internal_consistency(input_path)
     findings=sfind+rfind+tfind+cfind
+    # A typed/static contents page cannot recalculate page numbers after reflow. A real
+    # Word TOC field is configured by the formatter to refresh when opened; a static TOC
+    # must remain a manual-review item rather than being silently left stale.
+    contents_component=comps.get("contents")
+    if contents_component and contents_component.status!=ComponentStatus.MISSING and not has_dynamic_toc(input_path):
+        findings.append(Finding(
+            "STATIC_TOC_PAGE_NUMBERS_REQUIRE_UPDATE",
+            "Contents page uses static page numbers",
+            "The Contents section is present, but no dynamic Word TOC field was detected. Formatting can change pagination, so the typed page numbers cannot be guaranteed to remain correct. Update the Contents page numbers in Word before submission.",
+            Severity.MAJOR,Action.MANUAL_REVIEW
+        ))
     if pre.duplicate_page_fields:
         findings.append(Finding("DUPLICATE_PAGE_FIELDS","Duplicate PAGE fields detected","More than one PAGE field exists in at least one header/footer part. The formatter can safely retain one and remove duplicates when formatting is permitted.",Severity.MAJOR,Action.AUTO_FIX))
     page_field_parts=count_page_fields_by_part(input_path)
@@ -55,7 +67,21 @@ def audit_document(input_path: str|Path, output_dir: str|Path, language: str="en
         stem=input_path.stem
         if status!=SubmissionStatus.RESUBMIT:
             formatted=out/f"{stem}_FORMATTED_DISSERTATION.docx"
-            audit.auto_fixes=format_document(input_path,formatted,refs.system);audit.formatted_path=str(formatted)
+            audit.auto_fixes=format_document(input_path,formatted,refs.system)
+            try:
+                integrity=assert_content_integrity(input_path,formatted)
+            except ContentIntegrityError:
+                formatted.unlink(missing_ok=True)
+                raise
+            audit.metadata["post_format_content_integrity"]=integrity.to_dict()
+            audit.findings.append(Finding(
+                "POST_FORMAT_CONTENT_INTEGRITY_VERIFIED",
+                "Post-format content integrity verified",
+                "Automated post-format verification confirmed that student text, table structure/text, media, hyperlinks and embedded content were preserved. Formatting output was released only after this check passed.",
+                Severity.ADVISORY,Action.FLAG,
+                evidence=integrity.details
+            ))
+            audit.formatted_path=str(formatted)
         report_name=f"{stem}_NONCOMPLIANCE_REPORT.docx" if status==SubmissionStatus.RESUBMIT else f"{stem}_COMPLIANCE_REPORT.docx"
         report=out/report_name;generate_report(audit,report);audit.report_path=str(report)
         with open(out/f"{stem}_audit.json","w",encoding="utf-8") as f:json.dump(audit.to_dict(),f,ensure_ascii=False,indent=2)
